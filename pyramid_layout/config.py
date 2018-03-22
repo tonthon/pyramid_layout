@@ -216,8 +216,11 @@ def add_panel(config, panel=None, name="", context=None,
                     registry=config.registry)
 
         elif isinstance(renderer, basestring):
-            renderer = renderers.RendererHelper(name=renderer,
-                package=config.package, registry=config.registry)
+            renderer = renderers.RendererHelper(
+                name=renderer,
+                package=config.package,
+                registry=config.registry
+            )
 
         def derive_rendered(wrapped, renderer):
             if renderer is None:
@@ -229,8 +232,10 @@ def add_panel(config, panel=None, name="", context=None,
                     return result
                 system = {'panel': panel,
                           'renderer_info': renderer,
+                          'renderer_name': renderer.name,
                           'context': context,
-                          'request': request
+                          'request': request,
+                          'req': request,
                           }
                 rendered = renderer.render(result, system, request=request)
                 return rendered
@@ -286,10 +291,11 @@ class _PanelMapper(object):
 
     def map_class(self, panel):
         attr = self.attr
+
         def class_panel(context, request, *args, **kw):
             inst = panel(context, request)
             if attr is None:
-                return inst(*args ,**kw)
+                return inst(*args, **kw)
             return getattr(inst, attr)(*args, **kw)
         return class_panel
 
@@ -364,8 +370,11 @@ def add_layout(config, layout=None, template=None, name='', context=None,
 
     def register(template=template):
         if isinstance(template, basestring):
-            template = renderers.RendererHelper(name=template,
-                package=config.package, registry=config.registry)
+            template = renderers.RendererHelper(
+                name=template,
+                package=config.package,
+                registry=config.registry
+            )
 
         layout_intr.update(
             dict(
